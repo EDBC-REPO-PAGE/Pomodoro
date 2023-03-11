@@ -1,0 +1,95 @@
+<main class="uk-light">
+
+    <section class="uk-width-1-4 uk-flex uk-flex-column uk-flex-middle 
+                    uk-index-top uk-position-center"
+             clock>
+        <h1> 12 : 00 </h1> <h3> paused </h3> <h2> 05 : 00 </h2>
+    </section>
+
+    <section class="uk-position-center">
+        /°(()=>{
+            const w=500, h=500, s=180; return `
+                <svg width="${w}" height="${h}" viewBox="0 0 ${w} ${h}" progressbar>
+                    <circle cx="${w/2}" cy="${h/2}" r="${s*1.1}" pathLength="100" />
+                    <circle cx="${w/2}" cy="${h/2}" r="${s}" pathLength="100" />
+                    <circle cx="${w/2}" cy="${h/2}" r="${s}" pathLength="100" />
+                </svg>
+            `;
+        })()°/
+    </section>
+
+    <br><br>
+
+    <section class="uk-position-bottom uk-position-small uk-flex uk-flex-center">
+        <section class="uk-darker uk-rounded-large uk-width-1-3@s uk-width-2-3
+                        uk-flex uk-flex-center">
+
+            <div class="uk-padding">
+                <a class="uk-button uk-danger uk-enphasis uk-rounded-large
+                          uk-default-enphasis-hover" 
+                   uk-icon="icon:play; ratio:1.2;" 
+                   onclick="window.playClock()">
+                </a>
+            </div>
+    
+            <div class="uk-padding">
+                <a class="uk-button uk-danger uk-enphasis uk-rounded-large
+                          uk-default-enphasis-hover" 
+                   uk-toggle="target:.uk-offcanvas"
+                   uk-icon="icon:cog; ratio:1.2;" >
+                </a>
+            </div>
+    
+            <div class="uk-padding">
+                <a class="uk-button uk-danger uk-enphasis uk-rounded-large
+                          uk-default-enphasis-hover" 
+                   uk-icon="icon:refresh; ratio:1.2;"
+                   onclick="window.resetClock()">
+                </a>
+            </div>
+
+        </section>
+    </section>
+
+</main>
+
+<script>
+(function(){
+    
+    function main(){
+        const ssn = window.state.get('sessn').map(x=>x<10?`0${x}`:x);
+        const brk = window.state.get('break').map(x=>x<10?`0${x}`:x);
+        $('[clock] h1').innerText = ssn.join(' : ');
+        $('[clock] h2').innerText = brk.join(' : ');
+    }
+
+    window.resetClock = function(bool=true){
+        window.state.set(state=>({
+            state: bool ? 'paused':'playing', prog: 99.9, 
+            sessn: state.b_sessn, break: state.b_break,
+        })); console.log('reset');
+    }
+
+    window.playClock = function(){
+        window.state.set((state)=>({
+            state: state.state!='playing' ? 
+            'playing' : 'paused',
+        }));
+    }
+
+    window.state.observeField('sessn',main);
+    window.state.observeField('break',main);
+
+    window.state.observeField('prog',(prv,act)=>{
+        $('[progressbar] circle:nth-child(2)')
+        .style.strokeDashoffset = act;
+    });
+
+    window.state.observeField('state',(prv,act)=>{
+        $('[clock] h3').innerText = act;
+    });
+
+    main();
+    
+})();
+</script>

@@ -1,0 +1,63 @@
+<section class="uk-secondary uk-light" uk-offcanvas>
+    <div class="uk-offcanvas-bar">
+        <button class="uk-offcanvas-close" type="button" uk-close></button>
+        <ul class="uk-list uk-list-divider">
+
+            <li><h3>Time Session</h3></li>
+            <li class="uk-flex" sessn>
+                <a class="uk-button uk-danger uk-enphasis" uk-icon="icon:arrow-left"></a>
+                <h4 class="uk-width-expand uk-text-center"> 12 min </h4>
+                <a class="uk-button uk-danger uk-enphasis" uk-icon="icon:arrow-right"></a>
+            </li>
+
+            <li><br><br><h3>Time Break</h3></li>
+            <li class="uk-flex" break>
+                <a class="uk-button uk-danger uk-enphasis" uk-icon="icon:arrow-left"></a>
+                <h4 class="uk-width-expand uk-text-center"> 5 min </h4>
+                <a class="uk-button uk-danger uk-enphasis" uk-icon="icon:arrow-right"></a>
+            </li><li></li>
+            
+        </ul>
+    </div>
+</section>
+
+<script>
+(function(){
+
+    function main(){
+        window.state.set(state=>({ 
+            prog: 99.9, state: 'paused', 
+            sessn: state.b_sessn, break: state.b_break 
+        }));
+        $('[sessn] h4').innerText = `${window.state.get('sessn')[0]} min`;
+        $('[break] h4').innerText = `${window.state.get('break')[0]} min`; 
+    }
+
+    /°(()=>{
+        const data = 'sessn|break'.split('|');
+        return data.map(x=>`
+
+            addEvent($('[${x}] a:nth-child(1)'),'click',()=>{
+                window.state.set((state)=>({
+                b_${x}: [ state.b_${x}[0]<=1 ? 1 :
+                          state.b_${x}[0] - 1 ,0] 
+                })); console.log('${x} decremented');
+            })
+
+            addEvent($('[${x}] a:nth-child(3)'),'click',()=>{
+                window.state.set((state)=>({
+                b_${x}: [ state.b_${x}[0]>=60 ? 60 :
+                          state.b_${x}[0] + 1 ,0] 
+                })); console.log('${x} incremented');
+            })
+
+        `).join('');
+    })()°/
+
+    window.state.observeField('b_sessn',main);
+    window.state.observeField('b_break',main);
+
+    main();
+
+})();
+</script>
